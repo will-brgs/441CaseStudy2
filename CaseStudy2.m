@@ -62,3 +62,16 @@ xlabel('Time (min)');
 ylabel('Plasma Insulin I(t) (mU/L)');
 title('Plasma Insulin Concentration');
 grid on;
+%% plot for analysis
+fakey = -20 + (40 * rand(1, 29));
+fakex = zeros(length(29),1);
+
+figure
+b = bar(fakey);
+% b.Barwidth = 2;
+% b.FaceColor = 'b';
+
+xlabel('Simulation #')
+ylabel('Glucose Deviation from 100mg/dL')
+title('Efficacy Analysis of Auto Mode')
+grid on
