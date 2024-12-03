@@ -31,8 +31,8 @@ for i = 1:1 % index changes run #
     %D = @(t) 50 * (t > 60 && t < 120);  % Example: 50 mg/dL/min from 60 to 120 min
 
 if i == 1
-%D = DGenerate('Monophasic',t,60,80,10,10,20);
-D = DGenerate('Biphasic',t,);
+D = DGenerate('Monophasic',t,20,0,70,20,40);
+%D = DGenerate('Biphasic',t,);
 
 end
 figure;
