@@ -17,8 +17,8 @@ A_lin = [-p1, G_b, 0;
 B = [0; 0; 1];
 C = [1, 0, 0];
 
-K = [k_pa; k_pb; k_pc];
-P = [k_ia; k_ib; k_ic];
+K_p = [k_pa; k_pb; k_pc];
+K_i = [k_ia; k_ib; k_ic];
 
 %% Part A
 W_c_1 = [B, A_lin*B, A_lin*A_lin*B];
@@ -41,7 +41,7 @@ des_poly = s^3 + 9*s^2 + 27*s + 27;
 des_coeffs = coeffs(des_poly, s);
 
 
-char_poly_a1 = det(s*eye(3) - (A_lin - B*K.'));
+char_poly_a1 = det(s*eye(3) - (A_lin - B*K_p.'));
 curr_coeffs_a1 = coeffs(char_poly_a1, s);
 
 system = curr_coeffs_a1 == des_coeffs;
@@ -52,7 +52,7 @@ K_a1 = [double(sol.k_1);
         double(sol.k_3)];
 
 
-char_poly_a2 = det(s*eye(3) - (A_lin2 - B*K.'));
+char_poly_a2 = det(s*eye(3) - (A_lin2 - B*K_p.'));
 curr_coeffs_a2 = coeffs(char_poly_a2, s);
 
 system = curr_coeffs_a2 == des_coeffs;
