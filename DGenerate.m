@@ -6,9 +6,9 @@ if strcmpi(mode, 'monophasic')
 for i = 1:length(t)
     if t(i) >= tStart % zeros until start time
     if t(i) <= tPeak
-        D(i) = maxMag * exp(-((t(i) - tPeak)^2) / (2 * sigma1^2));
+        D(i) = maxMag * exp(-((t(i)- tStart - tPeak)^2) / (2 * sigma1^2));
     else
-        D(i) = maxMag * exp(-((t(i) - tPeak)^2) / (2 * sigma2^2));
+        D(i) = maxMag * exp(-((t(i)- tStart - tPeak)^2) / (2 * sigma2^2));
     end
     end
 end
