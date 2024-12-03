@@ -1,4 +1,4 @@
-function D = DGenerate1(mode,t, maxMag, tPeak,tStart, riseConstant, decayConstant)
+function D = DGenerate(mode,t, maxMag, tPeak,tStart, riseConstant, decayConstant)
 D = zeros(size(t));
     
     % Monophasic curve
