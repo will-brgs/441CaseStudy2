@@ -10,58 +10,72 @@ clc
 code = "finished";
 
 colors = get(gca, 'ColorOrder');
+blu = colors(1,:);
+purp = colors(4,:);
+grn = colors(5,:);
 %%
-
 % Parameters
-p1 = 0.03;     % Rate of glucose decay (1/min)
-p2 = 0.02;     % Rate of insulin action decay (1/min)
-p3 = 0.01;     % Insulin sensitivity (1/min)
-n = 0.1;       % Insulin clearance rate (1/min)
-Gb = 100;      % Baseline glucose (mg/dL)
-Ib = 10;       % Baseline plasma insulin (mU/L)
+p1 = 0.03;     % Rate of glucose decay
+p2 = 0.02;     % Rate of insulin action decay
+p3 = 0.01;     % Insulin sensitivity
+n = 0.1;       % Insulin clearance rate
+Gb = 100;      % Baseline glucose
+Ib = 10;       % Baseline plasma insulin
 
+t = 0:0.1:180;
 
-tspan = linspace(0,1000,300); % minutes
-IC = [Gb, 0, Ib];
+IC = [Gb, 0, Ib]; %should baseline insulin action be zero???
+u = @(t) 2;  % No external insulin delivery for now
 
-% Meal glucose influx D(t) and insulin delivery u(t)
-D = @(t) 50 * (t > 60 && t < 120);  % Example: 50 mg/dL/min from 60 to 120 min
-u = @(t) 0;  % No external insulin delivery for now
+for i = 1:1 % index changes run # 
+    %D = @(t) 50 * (t > 60 && t < 120);  % Example: 50 mg/dL/min from 60 to 120 min
 
+if i == 1
+D = DGenerate('Monophasic',t,60,80,10,10,20);
+end
+figure;
+plot(t, D,'color',purp,  'LineWidth', 1.5);
+xlabel('Time (min)');
+ylabel('D(t) (mg/dL)');
+title('Glucose Influx');
+grid on;
+if i == 2
+    
+end
+%%
 dynamics = @(t, y) [ -p1 * (y(1) - Gb) - y(2) * y(1) + D(t);
                      -p2 * y(2) + p3 * (y(3) - Ib);
                      -n * y(3) + u(t)]; % Gdot, Xdot, Idot
-
 % Solve the system using ode45
-[t, y] = ode45(dynamics, tspan, IC);
+[t, y] = ode45(dynamics, t, IC);
 
 % Extract states
 G = y(:, 1);  % Blood glucose concentration
 X = y(:, 2);  % Insulin action
 I = y(:, 3);  % Plasma insulin concentration
 
-% Plot results
 figure;
 subplot(3, 1, 1);
-plot(t, G, 'b', 'LineWidth', 1.5);
+plot(t, G,'color',blu,  'LineWidth', 1.5);
 xlabel('Time (min)');
-ylabel('Glucose G(t) (mg/dL)');
+ylabel('G(t) (mg/dL)');
 title('Blood Glucose Concentration');
 grid on;
 
 subplot(3, 1, 2);
-plot(t, X, 'r', 'LineWidth', 1.5);
+plot(t, X,'color',purp , 'LineWidth', 1.5);
 xlabel('Time (min)');
-ylabel('Insulin Action X(t)');
+ylabel('X(t)');
 title('Insulin Action Dynamics');
 grid on;
 
 subplot(3, 1, 3);
-plot(t, I, 'g', 'LineWidth', 1.5);
+plot(t, I, 'g','color',grn,  'LineWidth', 1.5);
 xlabel('Time (min)');
-ylabel('Plasma Insulin I(t) (mU/L)');
+ylabel('I(t) (mU/L)');
 title('Plasma Insulin Concentration');
 grid on;
+end
 %% plot for analysis
 fakey = -20 + (40 * rand(1, 29));
 fakex = zeros(length(29),1);
