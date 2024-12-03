@@ -32,7 +32,7 @@ for i = 1:1 % index changes run #
 
 if i == 1
 %D = DGenerate('Monophasic',t,60,80,10,10,20);
-D = DGenerate('Biphasic',t,60,80,10,10,20);
+D = DGenerate('Biphasic',t,);
 
 end
 figure;
