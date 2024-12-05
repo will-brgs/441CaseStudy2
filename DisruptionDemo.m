@@ -5,7 +5,6 @@
 % * Date:                     Created 12/02/2024, Last Edited 12/09/2024
 %%
 %% Housekeeping
-close all
 clear
 clc
 code = "finished";
@@ -15,6 +14,8 @@ blu = colors(1,:);
 org = colors(2,:);
 purp = colors(4,:);
 grn = colors(5,:);
+close all
+
 %%
 figure;
 t = 0:0.1:240;
@@ -27,11 +28,11 @@ DLift = DGenerate('Lift',t,30,0,10,15,15, 0);
 DRun = DGenerate('Run',t,30,0,5,1,50,-10);
 
 subplot(2,2,1)
-sgtitle('Evaluated Glucose Disturbance Models D(t)')
+sgtitle('Glucose Disturbance Models')
 plot(t, DMono,'color',blu,  'LineWidth', 1.5);
 xlabel('Time (min)');
 ylabel('D(t) (mg/dL)');
-title(sprintf('Monophasic Eating'));
+title(sprintf('Monophasic Nutrition'));
 xlim([0 max(t)]), ylim([0 20]);  
 grid on;
 
@@ -39,7 +40,7 @@ subplot(2,2,2)
 plot(t, DBi,'color',org,  'LineWidth', 1.5);
 xlabel('Time (min)');
 ylabel('D(t) (mg/dL)');
-title(sprintf('Biphasic Eating'));
+title(sprintf('Biphasic Nutrition'));
 xlim([0 max(t)]), ylim([0 20]);  
 grid on;
 
