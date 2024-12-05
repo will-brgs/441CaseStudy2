@@ -26,10 +26,16 @@ Ib = 10;       % Baseline plasma insulin
 t = 0:0.1:240;
 
 IC = [Gb, 0, Ib]; %should baseline insulin action be zero???
-u = @(t) 2;  % No external insulin delivery for now
 
-for i = 1:1 % index i changes run # 
-i = 4
+for j = 1:1 % Varies mode from auto to exercise. change to 2 later
+    if j ==1
+        mode = 'Auto';
+        u = 0;
+    elseif j==2
+        mode = 'Exercise';
+        u = 0;
+    end
+for i = 1:1 % Sweeps through D values, change to 4 later
 if i == 1
 D = DGenerate('Monophasic',t,20,0,70,20,50, 0);
 elseif i == 2
@@ -86,6 +92,14 @@ xlabel('Time (min)');
 ylabel('I(t) (mU/L)');
 title('Plasma Insulin Concentration');
 grid on;
+
+if i == 1
+sgitle('System State Responses:')
+elseif i == 2
+elseif i == 3
+elseif i == 4
+end
+end
 end
 %% plot for analysis
 fakey = -20 + (40 * rand(1, 29));
