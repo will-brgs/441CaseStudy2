@@ -1,5 +1,9 @@
-%% Distruption Demo
-
+%% Distrubtion Demo: Generates Plot to demonstate D(t) Utilized
+%% Introduction
+% * Authors:                  Will Burgess, Mack LaRosa
+% * Class:                    ESE 441
+% * Date:                     Created 12/02/2024, Last Edited 12/09/2024
+%%
 %% Housekeeping
 close all
 clear

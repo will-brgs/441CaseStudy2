@@ -1,3 +1,9 @@
+%% findGains: Finds gains of K for U design
+%% Introduction
+% * Authors:                  Will Burgess, Mack LaRosa
+% * Class:                    ESE 441
+% * Date:                     Created 12/02/2024, Last Edited 12/09/2024
+
 %% Set Up
 syms s k_pa k_pb k_pc k_ia k_ib k_ic
 
