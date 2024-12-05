@@ -4,16 +4,16 @@
 % * Class:                    ESE 441
 % * Date:                     Created 11/21/2024, Last Edited 12/09/2024
 %% Housekeeping
-close all
 clear
 clc
 code = "finished";
-
 colors = get(gca, 'ColorOrder');
 blu = colors(1,:);
 org = colors(2,:);
 purp = colors(4,:);
 grn = colors(5,:);
+
+close all
 %%
 % Parameters
 p1 = 0.03;     % Rate of glucose decay
@@ -38,18 +38,22 @@ for j = 1:1 % Varies mode from auto to exercise. change to 2 later
 for i = 1:1 % Sweeps through D values, change to 4 later
 if i == 1
 D = DGenerate('Monophasic',t,20,0,70,20,50, 0);
+disturbance = 'Monophasic Eating';
 elseif i == 2
 D = DGenerate('Biphasic',t,15,0,70,15,30, 0);
+disturbance = 'Biphasic Eating';
 elseif i == 3
 D = DGenerate('Lift',t,30,0,10,15,15, 0);
+disturbance = 'Weightlifting';
 elseif i == 4
 D = DGenerate('Run',t,30,0,5,1,50,-10);
+disturbance = 'Marathon';
 end
 figure;
 plot(t, D,'color',purp,  'LineWidth', 1.5);
 xlabel('Time (min)');
 ylabel('D(t) (mg/dL)');
-title(sprintf('Utlilized Glucoes Disturbance | Run #%d', i));
+title(sprintf('Utlilized Glucoes Disturbance | %s', disturbance));
 if i ~= 4
 xlim([0 max(t)]), ylim([0 31]);  
 elseif i == 4
@@ -93,12 +97,7 @@ ylabel('I(t) (mU/L)');
 title('Plasma Insulin Concentration');
 grid on;
 
-if i == 1
-sgitle('System State Responses:')
-elseif i == 2
-elseif i == 3
-elseif i == 4
-end
+sgitle('System State Responses\nDisturbance Type: %s\nControl Mode: %s',disturbance, mode)
 end
 end
 %% plot for analysis
