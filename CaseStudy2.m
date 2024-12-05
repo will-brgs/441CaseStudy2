@@ -63,13 +63,12 @@ end
 grid on;
     
 %%
+dynamics = @(t, y) [
+            -p1 * (y(1) - Gb) - y(2) * y(1) + D(round(t / 0.1) + 1);
+            -p2 * y(2) + p3 * (y(3) - Ib);
+            -n * y(3) + u(round(t / 0.1) + 1)];
 
-dynamics = @(t, y, D) [
-    -p1 * (y(1) - Gb) - y(2) * y(1) + D(round(t*10) + 1); % t*10 to match indices
-    -p2 * y(2) + p3 * (y(3) - Ib);
-    -n * y(3) + u(round(t*10))]; % Gdot, Xdot, Idot
-
-[t, y] = ode45(@(t, y) dynamics(t, y, D), t, IC);
+[t, y] = ode45(dynamics, t, IC);
 
 % Extract states
 G = y(:, 1);  % Blood glucose concentration
@@ -98,7 +97,10 @@ ylabel('I(t) (mU/L)');
 title('Plasma Insulin Concentration');
 grid on;
 
-sgitle('System State Responses\nDisturbance Type: %s\nControl Mode: %s',disturbance, mode)
+sgtitle({'System State Responses', ...
+    sprintf('Disturbance Type: %s', disturbance), ...
+    sprintf('Control Mode: %s', mode)},...
+    'FontSize', 12, 'FontWeight', 'bold')
 end
 end
 %% plot for analysis
