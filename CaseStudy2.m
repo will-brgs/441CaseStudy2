@@ -30,10 +30,10 @@ IC = [Gb, 0, Ib]; %should baseline insulin action be zero???
 for j = 1:1 % Varies mode from auto to exercise. change to 2 later
     if j ==1
         mode = 'Auto';
-        u = 0;
+        u = zeros(length(t),1);
     elseif j==2
         mode = 'Exercise';
-        u = 0;
+        u = zeros(length(t),1);
     end
 for i = 1:1 % Sweeps through D values, change to 4 later
 if i == 1
@@ -63,10 +63,11 @@ end
 grid on;
     
 %%
+
 dynamics = @(t, y, D) [
     -p1 * (y(1) - Gb) - y(2) * y(1) + D(round(t*10) + 1); % t*10 to match indices
     -p2 * y(2) + p3 * (y(3) - Ib);
-    -n * y(3) + u(t)]; % Gdot, Xdot, Idot
+    -n * y(3) + u(round(t*10))]; % Gdot, Xdot, Idot
 
 [t, y] = ode45(@(t, y) dynamics(t, y, D), t, IC);
 
