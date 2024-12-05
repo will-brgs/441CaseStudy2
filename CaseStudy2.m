@@ -25,7 +25,7 @@ Ib = 10;       % Baseline plasma insulin
 
 t = 0:0.1:240;
 
-IC = [Gb, 0, Ib]; %should baseline insulin action be zero???
+IC = [Gb, 1, Ib]; %should baseline insulin action be zero???
 
 for j = 1:1 % Varies mode from auto to exercise. change to 2 later
     if j ==1
@@ -35,7 +35,7 @@ for j = 1:1 % Varies mode from auto to exercise. change to 2 later
         mode = 'Exercise';
         u = zeros(length(t),1);
     end
-for i = 1:1 % Sweeps through D values, change to 4 later
+for i = 5 % Sweeps through D values, change to 4 later
 if i == 1
 D = DGenerate('Monophasic',t,20,0,70,20,50, 0);
 disturbance = 'Monophasic Eating';
@@ -48,6 +48,9 @@ disturbance = 'Weightlifting';
 elseif i == 4
 D = DGenerate('Run',t,30,0,5,1,50,-10);
 disturbance = 'Marathon';
+elseif i== 5 %debug only
+D = zeros(length(t),1);
+disturbance = 'No Disturbance';
 end
 figure;
 plot(t, D,'color',purp,  'LineWidth', 1.5);
@@ -63,10 +66,18 @@ end
 grid on;
     
 %%
+Dinterp = @(t) interp1(0:0.1:240, D, t, 'linear', 'extrap');
+uinterp = @(t) interp1(0:0.1:240, u, t, 'linear', 'extrap');
+
+% dynamics = @(t, y) [
+%             -p1 * (y(1) - Gb) - y(2) * y(1) + D(round(t / 0.1) + 1);
+%             -p2 * y(2) + p3 * (y(3) - Ib);
+%             -n * y(3) + u(round(t / 0.1) + 1)];
+
 dynamics = @(t, y) [
-            -p1 * (y(1) - Gb) - y(2) * y(1) + D(round(t / 0.1) + 1);
-            -p2 * y(2) + p3 * (y(3) - Ib);
-            -n * y(3) + u(round(t / 0.1) + 1)];
+    -p1 * (y(1) - Gb) - y(2) * y(1) + Dinterp(t);
+    -p2 * y(2) + p3 * (y(3) - Ib);
+    -n * y(3) + uinterp(t)];
 
 [t, y] = ode45(dynamics, t, IC);
 
