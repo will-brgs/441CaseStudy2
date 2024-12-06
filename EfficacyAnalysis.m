@@ -53,8 +53,15 @@ elseif i== 5 %debug only
 D = zeros(length(t),1);
 disturbance = 'No Disturbance';
 end
+
+%% Initialize Saved Results
+simLength = 30;
+meanErrors = zeros(simLength,1);
+maxErrors = zeros(simLength,1);
+
+simlen
 %% Reset 
-for k = 1:30 % 
+for k = 1:simLength % 
 Gout = zeros(length(t),30);
 
 p1 = p1Base  * (0.85 + (0.3 * rand));     % Rate of glucose decay
@@ -89,14 +96,33 @@ Gout(:,k) = G;
 baseline = Gb;
 
 error = Gout - baseline;
-avgError = mean(error);
+meanError = mean(error);
 maxError = max(error);
 minError = min(error);
 
-
-boxplot(error)
+meanErrors(k) = meanError;
+if (abs(maxError) > abs(minError))
+maxErrors(k) = maxError;
+else
+maxErrors(k) = minError;
 end
 
 
 end
+
+boxplot(meanError)
+
+fakey = -20 + (40 * rand(1, 29));
+fakex = zeros(length(29),1);
+
+figure
+b = bar(fakey);
+% b.Barwidth = 2;
+% b.FaceColor = 'b';
+
+xlabel('Simulation #')
+ylabel('Glucose Deviation from 100mg/dL')
+title('Efficacy Analysis of Auto Mode')
+grid on
+
 end
