@@ -27,6 +27,18 @@ t = 0:0.1:240;
 
 IC = [Gb, 0, Ib]; %should baseline insulin action be zero???
 
+%%
+A = [-p1, -Gb, 0;
+     0, -p2, p3;
+     0, 0, -n];
+B = [0;
+     0;
+     1];
+C = [1, 0, 0];
+
+[K_p, K_i, L] = findGains(A, B, C, [-1, -1.1, -1.2, -1.3], [-2, -2.1, -2.2]);
+
+%%
 for j = 1:1 % Varies mode from auto to exercise. change to 2 later
     if j ==1
         mode = 'Auto';

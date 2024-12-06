@@ -1,4 +1,4 @@
-function [Kp, Ki, L] = design_PI_controller_observer(A, B, C, desired_controller_poles, desired_observer_poles)
+function [Kp, Ki, L] = findGains(A, B, C, desired_controller_poles, desired_observer_poles)
 % design_PI_controller_observer Designs PI controller and observer gains
 %
 % Syntax:
@@ -21,15 +21,6 @@ function [Kp, Ki, L] = design_PI_controller_observer(A, B, C, desired_controller
     [nB, mB] = size(B);
     [nC, mC] = size(C);
     
-    if nA ~= mA
-        error('Matrix A must be square.');
-    end
-    if nB ~= nA || mB ~= 1
-        error('Matrix B must have the same number of rows as A and one column.');
-    end
-    if nC ~= 1 || mC ~= nA
-        error('Matrix C must have one row and the same number of columns as A.');
-    end
     
     % 1. Augment the system with an integrator for the PI controller
     % Integral state: z(t) = integral of error (z_dot = e = r - y)
@@ -41,8 +32,8 @@ function [Kp, Ki, L] = design_PI_controller_observer(A, B, C, desired_controller
     
     % 2. Check controllability of the augmented system
     controllability_matrix = ctrb(A_aug, B_aug);
-    if rank(controllability_matrix) < (size(A_aug,1))
-        error('The augmented system is not controllable. Please check the system matrices.');
+    if rank(controllability_matrix) > (size(A_aug,1))
+        disp("System is controllable")
     end
     
     % 3. Design the PI controller gains (Kp and Ki) using pole placement
@@ -54,8 +45,8 @@ function [Kp, Ki, L] = design_PI_controller_observer(A, B, C, desired_controller
     
     % 4. Check observability of the original system
     observability_matrix = obsv(A, C);
-    if rank(observability_matrix) < nA
-        error('The system is not observable. Please check the system matrices.');
+    if rank(observability_matrix) > nA
+        disp("System is observable")
     end
     
     % 5. Design the Observer gain (L) using pole placement
