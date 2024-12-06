@@ -25,7 +25,7 @@ Ib = 10;       % Baseline plasma insulin
 
 t = 0:0.1:240;
 
-IC = [Gb, 1, Ib]; %should baseline insulin action be zero???
+IC = [Gb, 0, Ib]; %should baseline insulin action be zero???
 
 for j = 1:1 % Varies mode from auto to exercise. change to 2 later
     if j ==1
@@ -114,20 +114,6 @@ sgtitle({'System State Responses', ...
     'FontSize', 12, 'FontWeight', 'bold')
 end
 end
-%% plot for analysis
-fakey = -20 + (40 * rand(1, 29));
-fakex = zeros(length(29),1);
-
-figure
-b = bar(fakey);
-% b.Barwidth = 2;
-% b.FaceColor = 'b';
-
-xlabel('Simulation #')
-ylabel('Glucose Deviation from 100mg/dL')
-title('Efficacy Analysis of Auto Mode')
-grid on
-
 %% Save images
 % filepath = "C:\Users\Will\OneDrive - Washington University in St. Louis\. Control Systems\Case Study 2\Figure Export";
 % exportgraphics(fh1, fullfile(filepath, 'part1 different vars.jpg'), 'resolution', 300);
