@@ -1,70 +1,80 @@
-%% findGains: Finds gains of K for U design
-%% Introduction
-% * Authors:                  Will Burgess, Mack LaRosa
-% * Class:                    ESE 441
-% * Date:                     Created 12/02/2024, Last Edited 12/09/2024
+function [Kp, Ki, L] = design_PI_controller_observer(A, B, C, desired_controller_poles, desired_observer_poles)
+% design_PI_controller_observer Designs PI controller and observer gains
+%
+% Syntax:
+%   [Kp, Ki, L] = design_PI_controller_observer(A, B, C, desired_controller_poles, desired_observer_poles)
+%
+% Inputs:
+%   A - State matrix of the plant (3x3)
+%   B - Input matrix of the plant (3x1)
+%   C - Output matrix of the plant (1x3)
+%   desired_controller_poles - Desired closed-loop poles for the controller (vector)
+%   desired_observer_poles - Desired poles for the observer (vector, typically faster than controller poles)
+%
+% Outputs:
+%   Kp - Proportional gain matrix (1x3)
+%   Ki - Integral gain scalar
+%   L  - Observer gain matrix (3x1)
 
-%% Set Up
-syms s k_pa k_pb k_pc k_ia k_ib k_ic
-
-%parameters
-p1 = 0.03;
-p2 = 0.02;
-p3 = 0.01;
-n = 0.1;
-G_b = 100;
-I_b = 10;
-
-
-A_lin = [-p1, G_b, 0;
-          0, s+p2, -p3;
-          0, 0, s+n];
-
-B = [0; 0; 1];
-C = [1, 0, 0];
-
-K_p = [k_pa; k_pb; k_pc];
-K_i = [k_ia; k_ib; k_ic];
-
-%% Part A
-W_c_1 = [B, A_lin*B, A_lin*A_lin*B];
-
-W_o_1 = [C; C*A_lin; C*A_lin*A_lin];
-
-rank(W_c_1);
-rank(W_o_1);
-
-W_c_2 = [B, A_lin2*B, A_lin2*A_lin2*B];
-
-W_o_2 = [C; C*A_lin2; C*A_lin2*A_lin2];
-
-rank(W_c_2);
-rank(W_o_2);
-
-%% Part b
-%Controller coefficients
-des_poly = s^3 + 9*s^2 + 27*s + 27;
-des_coeffs = coeffs(des_poly, s);
-
-
-char_poly_a1 = det(s*eye(3) - (A_lin - B*K_p.'));
-curr_coeffs_a1 = coeffs(char_poly_a1, s);
-
-system = curr_coeffs_a1 == des_coeffs;
-sol = solve(system, [k_pa, k_pb, k_pc]);
-
-K_a1 = [double(sol.k_1);
-        double(sol.k_2);
-        double(sol.k_3)];
-
-
-char_poly_a2 = det(s*eye(3) - (A_lin2 - B*K_p.'));
-curr_coeffs_a2 = coeffs(char_poly_a2, s);
-
-system = curr_coeffs_a2 == des_coeffs;
-sol = solve(system, [k_pa, k_pb, k_pc]);
-
-K_a2 = [double(sol.k_1);
-        double(sol.k_2);
-        double(sol.k_3)];
-
+    % Validate input dimensions
+    [nA, mA] = size(A);
+    [nB, mB] = size(B);
+    [nC, mC] = size(C);
+    
+    if nA ~= mA
+        error('Matrix A must be square.');
+    end
+    if nB ~= nA || mB ~= 1
+        error('Matrix B must have the same number of rows as A and one column.');
+    end
+    if nC ~= 1 || mC ~= nA
+        error('Matrix C must have one row and the same number of columns as A.');
+    end
+    
+    % 1. Augment the system with an integrator for the PI controller
+    % Integral state: z(t) = integral of error (z_dot = e = r - y)
+    
+    % Augmented state matrix (A_aug) and input matrix (B_aug)
+    A_aug = [A, B; 
+             C, 0];
+    B_aug = [B; 1];
+    
+    % 2. Check controllability of the augmented system
+    controllability_matrix = ctrb(A_aug, B_aug);
+    if rank(controllability_matrix) < (size(A_aug,1))
+        error('The augmented system is not controllable. Please check the system matrices.');
+    end
+    
+    % 3. Design the PI controller gains (Kp and Ki) using pole placement
+    K_aug = place(A_aug, B_aug, desired_controller_poles);
+    
+    % Extract Kp and Ki from K_aug
+    Kp = K_aug(1:nA);    % Proportional gains (1x3)
+    Ki = K_aug(end);     % Integral gain (scalar)
+    
+    % 4. Check observability of the original system
+    observability_matrix = obsv(A, C);
+    if rank(observability_matrix) < nA
+        error('The system is not observable. Please check the system matrices.');
+    end
+    
+    % 5. Design the Observer gain (L) using pole placement
+    % The observer poles should be faster than the controller poles
+    % To ensure faster state estimation
+    
+    % Transpose A and C for the 'place' function (which places poles for A')
+    L_transposed = place(A', C', desired_observer_poles);
+    L = L_transposed';   % Observer gain (3x1)
+    
+    % 6. Display the designed gains
+    fprintf('Designed Proportional Gains (Kp):\n');
+    disp(Kp);
+    fprintf('Designed Integral Gain (Ki):\n');
+    disp(Ki);
+    fprintf('Designed Observer Gains (L):\n');
+    disp(L);
+    
+    % 7. Optional: Return the gains if needed
+    % The function already returns [Kp, Ki, L]
+    
+end
