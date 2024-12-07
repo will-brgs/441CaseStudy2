@@ -38,6 +38,7 @@ C = [1, 0, 0];
 
 [K_p, K_i, L] = findGains(A, B, C, [-1, -1.1, -1.2, -1.3], [-2, -2.1, -2.2]);
 
+
 %%
 for j = 1:1 % Varies mode from auto to exercise. change to 2 later
     if j ==1
@@ -82,21 +83,54 @@ Dinterp = @(t) interp1(0:0.1:240, D, t, 'linear', 'extrap');
 uinterp = @(t) interp1(0:0.1:240, u, t, 'linear', 'extrap');
 
 % dynamics = @(t, y) [
-%             -p1 * (y(1) - Gb) - y(2) * y(1) + D(round(t / 0.1) + 1);
+%             -p1 * (y(1) - Gb) - y(2) * y(1);
 %             -p2 * y(2) + p3 * (y(3) - Ib);
-%             -n * y(3) + u(round(t / 0.1) + 1)];
+%             -n * y(3) ];
 
-dynamics = @(t, y) [
+dynamics = @(t, y, u) [
     -p1 * (y(1) - Gb) - y(2) * y(1) + Dinterp(t);
     -p2 * y(2) + p3 * (y(3) - Ib);
-    -n * y(3) + uinterp(t)];
+    -n * y(3) + u];
 
-[t, y] = ode45(dynamics, t, IC);
+% nonlinear = zeros(length(t),3);
+% nonlinear(1,:) = dynamics(1,IC);
+% 
+% for h = 1:length(t)
+% nonlinear(h+1) = dynamics(h,nonlinear(h));
+% 
+% end
+
+% Pre-allocate storage for the states (G, X, I)
+nonLinear = zeros(length(t), 3); % 3 columns for G(t), X(t), and I(t)
+nonLinear(1, :) = IC;            % Set initial condition
+
+u =  0 ; %initial u
+
+dt = t(2) - t(1);                % Time step
+
+vHat = IC;
+% Manual simulation loop
+for h = 1:(length(t)-1)
+    % Current state
+    vCurrent = nonLinear(h, :); % Row vector [G, X, I] at time step h
+    
+    vHatDot = A * vHat(h, :)' + B * u + L * (vCurrent(1) - vHat(h, 1));
+    vHat(h+1, :) = (vHat(h, :)' + vHatDot * dt)'; % Transpose back to row vector
+    z = (Gb * ones(h,1)) - nonLinear(1:h,1);
+    z = sum(z);
+
+    u = K_p * vHat(h, :)' + K_i * z;
+ 
+    % Compute derivative using the dynamics function
+    dvdt = dynamics(t(h), vCurrent', u); % Pass the current state as a column vector
+    
+    nonLinear(h+1, :) = vCurrent + dvdt' * dt; % Transpose dydt back to row vector
+end
 
 % Extract states
-G = y(:, 1);  % Blood glucose concentration
-X = y(:, 2);  % Insulin action
-I = y(:, 3);  % Plasma insulin concentration
+G = nonLinear(:, 1);  % Blood glucose concentration
+X = nonLinear(:, 2);  % Insulin action
+I = nonLinear(:, 3);  % Plasma insulin concentration
 
 figure;
 subplot(3, 1, 1);

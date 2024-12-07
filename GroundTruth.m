@@ -23,24 +23,15 @@ n = 0.1;       % Insulin clearance rate
 Gb = 100;      % Baseline glucose
 Ib = 10;       % Baseline plasma insulin
 
-t = 0:0.1:240;
+actionIC = 10;
 
-A = [-p1, -Gb, 0;
-     0, -p2, p3;
-     0, 0, -n];
-B = [0;
-     0;
-     1];
-C = [1, 0, 0];
+tLim = 10;
+t = 0:0.1:tLim;
 
-[K_p, K_i, L] = findGains(A, B, C, [-1, -1.1, -1.2, -1.3], [-2, -2.1, -2.2]);
-
-IC = [Gb, 0, Ib]; %should baseline insulin action be zero???
-
-
+IC = [Gb, actionIC, Ib]; %should baseline insulin action be zero???
 
 %%
-for i = 3 % Sweeps through D values, change to 4 later
+for i = 5 % Sweeps through D values, change to 4 later
 if i == 1
 D = DGenerate('Monophasic',t,20,0,70,20,50, 0);
 disturbance = 'Monophasic Eating';
@@ -73,54 +64,13 @@ end
 grid on;
 end
 %%
-Dinterp = @(t) interp1(0:0.1:240, D, t, 'linear', 'extrap');
+Dinterp = @(t) interp1(0:0.1:tLim, D, t, 'linear', 'extrap');
 
-% dynamics = @(t, y) [
-%             -p1 * (y(1) - Gb) - y(2) * y(1);
-%             -p2 * y(2) + p3 * (y(3) - Ib);
-%             -n * y(3) ];
+ dynamics = @(t, y) [
+     -p1 * (y(1) - Gb) - y(2) * y(1) + Dinterp(t);
+     -p2 * y(2) + p3 * (y(3) - Ib);
+     -n * y(3)];
 
-dynamics = @(t, y, u) [
-    -p1 * (y(1) - Gb) - y(2) * y(1) + Dinterp(t);
-    -p2 * y(2) + p3 * (y(3) - Ib);
-    -n * y(3) + u];
-
-% nonlinear = zeros(length(t),3);
-% nonlinear(1,:) = dynamics(1,IC);
-% 
-% for h = 1:length(t)
-% nonlinear(h+1) = dynamics(h,nonlinear(h));
-% 
-% end
-
-% Pre-allocate storage for the states (G, X, I)
-nonlinear = zeros(length(t), 3); % 3 columns for G(t), X(t), and I(t)
-nonlinear(1, :) = IC;            % Set initial condition
-
-u =  0 ; %initial u
-
-dt = t(2) - t(1);                % Time step
-
-vHat = IC;
-% Manual simulation loop
-for h = 1:(length(t)-1)
-    % Current state
-    vCurrent = nonlinear(h, :); % Row vector [G, X, I] at time step h
-    
-    vHatDot = A * vHat(h, :) + B*u + L*(vCurrent(h,1) - vHat(h,1));
-    vHat(h+1,:) = vHat(h, :) + vHatDot'*dt;
-    z = (Gb * ones(h,1)) - nonlinear(:,1);
-    z = sum(z);
-
-    u = K_p*vHat(h, :) + K_i*z;
- 
-    % Compute derivative using the dynamics function
-    dvdt = dynamics(t(h), vCurrent', u); % Pass the current state as a column vector
-    
-    % Update state using Euler's method
-    nonlinear(h+1, :) = vCurrent + dvdt' * dt; % Transpose dydt back to row vector
-end
-%%
 [t, y] = ode45(dynamics, t, IC);
 %%
 % Extract states
@@ -151,7 +101,8 @@ title('Plasma Insulin Concentration');
 grid on;
 
 sgtitle({'System State Responses', ...
-    sprintf('Disturbance Type: %s', disturbance)},...
+    sprintf('Disturbance Type: %s', disturbance), ...
+    sprintf('Inital Insulin-Action: %s', actionIC)},...
     'FontSize', 12, 'FontWeight', 'bold')
 end
 %% Save images
