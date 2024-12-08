@@ -25,8 +25,9 @@ Ib = 10;       % Baseline plasma insulin
 
 actionIC = 0;
 
-tLim = 10;
-t = 0:0.1:tLim;
+tLim = 240;
+dt = 0.1;
+t = 0:dt:tLim;
 
 IC = [Gb, actionIC, Ib]; %should baseline insulin action be zero???
 

@@ -50,7 +50,7 @@ for j = 1:1 % Varies mode from auto to exercise. change to 2 later
         mode = 'Exercise';
         u = zeros(length(t),1);
     end
-for i = 5 % Sweeps through D values, change to 4 later
+for i = 4 % Sweeps through D values, change to 4 later
 if i == 1
 D = DGenerate('Monophasic',t,20,0,70,20,50, 0);
 disturbance = 'Monophasic Eating';
@@ -95,7 +95,7 @@ uinterp = @(t) interp1(0:dt:tLim, u, t, 'linear', 'extrap');
 
 dynamics = @(t, y, u) [
     -p1 * (y(1) - Gb) - y(2) * y(1) + Dinterp(t);
-    -p2 * y(2) + p3 * (y(3) - Ib);
+     max(-p2 * y(2) + p3 * (y(3) - Ib));
     -n * y(3) + u];
 
 % Pre-allocate storage for the states (G, X, I)
