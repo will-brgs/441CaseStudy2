@@ -50,7 +50,7 @@ for j = 3 % Varies mode from auto to exercise. change to 2 later
     elseif j==3
         mode = 'Uncontrolled';
     end
-for i = 5 % Sweeps through D values, change to 4 later
+for i = 2 % Sweeps through D values, change to 4 later
 if i == 1
 D = DGenerate('Monophasic',t,20,0,70,20,50, 0);
 disturbance = 'Monophasic Eating';
@@ -68,7 +68,7 @@ D = zeros(length(t),1);
 disturbance = 'No Disturbance';
 end
 
-p = 1;% set to 1 to see debug graph
+p = 0;% set to 1 to see debug graph
 if p == 1
 figure;
 plot(t, D,'color',purp,  'LineWidth', 1.5);
@@ -120,7 +120,10 @@ for h = 1:(length(t)-1)
 
     %u(h+1) = K_p * vHat(h, :)' + K_i * z;
 
-    u(h+1) = -K_p * vHat(h, :)';
+    u(h+1) = -K_p * vHat(h, :)' - K_i*z;
+    if u(h+1, 1) <= 0
+        u(h+1, 1) = 0;    
+    end
  
     dvdt = dynamics(t(h), vCurrent', u(h)); % Pass the current state as a column vector
     
