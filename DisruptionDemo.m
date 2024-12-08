@@ -17,7 +17,7 @@ grn = colors(5,:);
 close all
 
 %%
-figure;
+fh1 = figure;
 t = 0:0.1:240;
 DMono = DGenerate('Monophasic',t,20,0,70,20,50);
 
@@ -63,4 +63,4 @@ grid on;
 
 %% Save images
 % filepath = "C:\Users\Will\OneDrive - Washington University in St. Louis\. Control Systems\Case Study 2\Figure Export";
-% exportgraphics(fh1, fullfile(filepath, 'part1 different vars.jpg'), 'resolution', 300);
+% exportgraphics(fh1, fullfile(filepath, 'Disruption Types.jpg'), 'resolution', 300);
