@@ -23,7 +23,9 @@ n = 0.1;       % Insulin clearance rate
 Gb = 100;      % Baseline glucose
 Ib = 10;       % Baseline plasma insulin
 
-t = 0:0.1:240;
+dt = 0.1;
+tLim = 240;
+t = 0:dt:tLim;
 
 IC = [Gb, 0, Ib]; %should baseline insulin action be zero???
 
@@ -61,10 +63,13 @@ disturbance = 'Weightlifting';
 elseif i == 4
 D = DGenerate('Run',t,30,0,5,1,50,-10);
 disturbance = 'Marathon';
-elseif i== 5 %debug only
+elseif i== 5
 D = zeros(length(t),1);
 disturbance = 'No Disturbance';
 end
+
+p = 0;% set to 1 to see debug graph
+if p == 1
 figure;
 plot(t, D,'color',purp,  'LineWidth', 1.5);
 xlabel('Time (min)');
@@ -77,10 +82,11 @@ xlim([0 max(t)]), ylim([-12 31]);
 yline(0, '--','Color', org, 'LineWidth', 1.5);
 end
 grid on;
+end
     
 %%
-Dinterp = @(t) interp1(0:0.1:240, D, t, 'linear', 'extrap');
-uinterp = @(t) interp1(0:0.1:240, u, t, 'linear', 'extrap');
+Dinterp = @(t) interp1(0:dt:tLim, D, t, 'linear', 'extrap');
+uinterp = @(t) interp1(0:dt:tLim, u, t, 'linear', 'extrap');
 
 % dynamics = @(t, y) [
 %             -p1 * (y(1) - Gb) - y(2) * y(1);
@@ -92,21 +98,11 @@ dynamics = @(t, y, u) [
     -p2 * y(2) + p3 * (y(3) - Ib);
     -n * y(3) + u];
 
-% nonlinear = zeros(length(t),3);
-% nonlinear(1,:) = dynamics(1,IC);
-% 
-% for h = 1:length(t)
-% nonlinear(h+1) = dynamics(h,nonlinear(h));
-% 
-% end
-
 % Pre-allocate storage for the states (G, X, I)
 nonLinear = zeros(length(t), 3); % 3 columns for G(t), X(t), and I(t)
 nonLinear(1, :) = IC;            % Set initial condition
 
 u =  0 ; %initial u
-
-dt = t(2) - t(1);                % Time step
 
 vHat = IC;
 % Manual simulation loop
@@ -116,15 +112,18 @@ for h = 1:(length(t)-1)
     
     vHatDot = A * vHat(h, :)' + B * u + L * (vCurrent(1) - vHat(h, 1));
     vHat(h+1, :) = (vHat(h, :)' + vHatDot * dt)'; % Transpose back to row vector
+    vHat(h+1, :) = max(vHat(h+1, :), 0); % ensure nonnegativity
+
+
     z = (Gb * ones(h,1)) - nonLinear(1:h,1);
     z = sum(z);
 
     u = K_p * vHat(h, :)' + K_i * z;
  
-    % Compute derivative using the dynamics function
     dvdt = dynamics(t(h), vCurrent', u); % Pass the current state as a column vector
     
     nonLinear(h+1, :) = vCurrent + dvdt' * dt; % Transpose dydt back to row vector
+    vHat(h+1, :) = max(vHat(h+1, :), 0); %ensure nonnegativity
 end
 
 % Extract states

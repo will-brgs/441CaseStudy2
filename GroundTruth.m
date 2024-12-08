@@ -23,7 +23,7 @@ n = 0.1;       % Insulin clearance rate
 Gb = 100;      % Baseline glucose
 Ib = 10;       % Baseline plasma insulin
 
-actionIC = 10;
+actionIC = 0;
 
 tLim = 10;
 t = 0:0.1:tLim;
@@ -102,7 +102,7 @@ grid on;
 
 sgtitle({'System State Responses', ...
     sprintf('Disturbance Type: %s', disturbance), ...
-    sprintf('Inital Insulin-Action: %s', actionIC)},...
+    sprintf('Inital Insulin-Action: %d', actionIC)},...
     'FontSize', 12, 'FontWeight', 'bold')
 end
 %% Save images
