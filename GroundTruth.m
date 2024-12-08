@@ -12,6 +12,7 @@ blu = colors(1,:);
 org = colors(2,:);
 purp = colors(4,:);
 grn = colors(5,:);
+red = colors(7,:);
 
 close all
 %%
@@ -31,8 +32,9 @@ t = 0:dt:tLim;
 
 IC = [Gb, actionIC, Ib]; %should baseline insulin action be zero???
 
+graph = 1; % set to 1 to genearte report graph of just glucose
 %%
-for i = 5 % Sweeps through D values, change to 4 later
+for i = 1:4 % Sweeps through D values, change to 4 later
 if i == 1
 D = DGenerate('Monophasic',t,20,0,70,20,50, 0);
 disturbance = 'Monophasic Eating';
@@ -49,6 +51,7 @@ elseif i == 5
 D = zeros(length(t),1);
 disturbance = 'None';
 end
+
 o = 0;
 if o == 1
 figure;
@@ -65,20 +68,25 @@ end
 grid on;
 end
 %%
-Dinterp = @(t) interp1(0:0.1:tLim, D, t, 'linear', 'extrap');
+Dinterp = @(t) interp1(0:dt:tLim, D, t, 'linear', 'extrap');
 
  dynamics = @(t, y) [
-     -p1 * (y(1) - Gb) - y(2) * y(1) + Dinterp(t);
-     -p2 * y(2) + p3 * (y(3) - Ib);
+     -p1 * (y(1) - Gb) - max(y(2),0) * y(1) + Dinterp(t);
+     -p2 * max(y(2), 0) + p3 * (y(3) - Ib);
      -n * y(3)];
 
 [t, y] = ode45(dynamics, t, IC);
+
+y(:, 2) = max(y(:, 2), 0); % Clamp Insulin Action
+
 %%
 % Extract states
 G = y(:, 1);  % Blood glucose concentration
 X = y(:, 2);  % Insulin action
 I = y(:, 3);  % Plasma insulin concentration
 
+
+if graph == 0
 figure;
 subplot(3, 1, 1);
 plot(t, G,'color',blu,  'LineWidth', 1.5);
@@ -95,7 +103,7 @@ title('Insulin Action Dynamics');
 grid on;
 
 subplot(3, 1, 3);
-plot(t, I, 'g','color',grn,  'LineWidth', 1.5);
+plot(t, I,'color',grn,  'LineWidth', 1.5);
 xlabel('Time (min)');
 ylabel('I(t) (mU/L)');
 title('Plasma Insulin Concentration');
@@ -105,7 +113,62 @@ sgtitle({'System State Responses', ...
     sprintf('Disturbance Type: %s', disturbance), ...
     sprintf('Inital Insulin-Action: %d', actionIC)},...
     'FontSize', 12, 'FontWeight', 'bold')
+
+elseif graph == 1
+if i == 1
+figure
+subplot(2,2,i)
+plot(t, G,'color',blu,  'LineWidth', 1.5);
+title(sprintf('Monophasic Nutrition'));
+xlabel('Time (min)');
+ylabel('G(t) (mg/dL)');
+xlim([0,240])
+ylim([-310,700])
+yline(100, '--','Color', red, 'LineWidth', 1.5);
+grid on
+
+hold on
+elseif i == 2
+subplot(2,2,i)
+hold on
+plot(t, G,'color',org,  'LineWidth', 1.5);
+title(sprintf('Biphasic Nutrition'));
+xlabel('Time (min)');
+ylabel('G(t) (mg/dL)');
+xlim([0,240])
+ylim([-200,700])
+yline(100, '--','Color', red, 'LineWidth', 1.5);
+grid on
+
+elseif i == 3
+subplot(2,2,i)
+hold on
+plot(t, G,'color',purp,  'LineWidth', 1.5);
+title(sprintf('Weightlifthing Adrenaline'));
+xlabel('Time (min)');
+ylabel('G(t) (mg/dL)');
+xlim([0,240])
+ylim([-200,700])
+yline(100, '--','Color', red, 'LineWidth', 1.5);
+grid on
+elseif i == 4
+subplot(2,2,i)
+hold on
+plot(t, G,'color',grn,  'LineWidth', 1.5);
+title(sprintf('Sugarloaded Marathon'));
+xlabel('Time (min)');
+ylabel('G(t) (mg/dL)');
+xlim([0,240])
+ylim([-260,700])
+yline(100, '--','Color', red, 'LineWidth', 1.5);
+
+grid on
+
 end
+sgtitle({'Ground Truth Glucose Response for Disturbance Models'})
+end
+end
+
 %% Save images
 % filepath = "C:\Users\Will\OneDrive - Washington University in St. Louis\. Control Systems\Case Study 2\Figure Export";
 % exportgraphics(fh1, fullfile(filepath, 'part1 different vars.jpg'), 'resolution', 300);
