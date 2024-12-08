@@ -13,7 +13,7 @@ org = colors(2,:);
 purp = colors(4,:);
 grn = colors(5,:);
 
-close all
+%close all
 %%
 % Parameters
 p1 = 0.03;     % Rate of glucose decay
@@ -42,13 +42,15 @@ C = [1, 0, 0];
 
 
 %%
-for j = 1:1 % Varies mode from auto to exercise. change to 2 later
-    if j ==1
+for j = 3 % Varies mode from auto to exercise. change to 2 later
+    if j == 1
         mode = 'Auto';
     elseif j==2
         mode = 'Exercise';
+    elseif j==3
+        mode = 'Uncontrolled';
     end
-for i = 4 % Sweeps through D values, change to 4 later
+for i = 1 % Sweeps through D values, change to 4 later
 if i == 1
 D = DGenerate('Monophasic',t,20,0,70,20,50, 0);
 disturbance = 'Monophasic Eating';
@@ -66,7 +68,7 @@ D = zeros(length(t),1);
 disturbance = 'No Disturbance';
 end
 
-p = 0;% set to 1 to see debug graph
+p = 1;% set to 1 to see debug graph
 if p == 1
 figure;
 plot(t, D,'color',purp,  'LineWidth', 1.5);
@@ -115,7 +117,7 @@ for h = 1:(length(t)-1)
     z = (Gb * ones(h,1)) - nonLinear(1:h,1);
     z = sum(z);
 
-    %u = K_p * vHat(h, :)' + K_i * z;
+    u = -K_p * vHat(h, :)' + K_i * z;
  
     dvdt = dynamics(t(h), vCurrent', u); % Pass the current state as a column vector
     
