@@ -23,7 +23,7 @@ n = 0.1;       % Insulin clearance rate
 Gb = 100;      % Baseline glucose
 Ib = 10;       % Baseline plasma insulin
 
-dt = 0.1;
+dt = 0.05;
 tLim = 240;
 t = 0:dt:tLim;
 
@@ -45,10 +45,8 @@ C = [1, 0, 0];
 for j = 1:1 % Varies mode from auto to exercise. change to 2 later
     if j ==1
         mode = 'Auto';
-        u = zeros(length(t),1);
     elseif j==2
         mode = 'Exercise';
-        u = zeros(length(t),1);
     end
 for i = 4 % Sweeps through D values, change to 4 later
 if i == 1
@@ -86,7 +84,6 @@ end
     
 %%
 Dinterp = @(t) interp1(0:dt:tLim, D, t, 'linear', 'extrap');
-uinterp = @(t) interp1(0:dt:tLim, u, t, 'linear', 'extrap');
 
 % dynamics = @(t, y) [
 %             -p1 * (y(1) - Gb) - y(2) * y(1);
@@ -118,12 +115,13 @@ for h = 1:(length(t)-1)
     z = (Gb * ones(h,1)) - nonLinear(1:h,1);
     z = sum(z);
 
-    u = K_p * vHat(h, :)' + K_i * z;
+    %u = K_p * vHat(h, :)' + K_i * z;
  
     dvdt = dynamics(t(h), vCurrent', u); % Pass the current state as a column vector
     
     nonLinear(h+1, :) = vCurrent + dvdt' * dt; % Transpose dydt back to row vector
     vHat(h+1, :) = max(vHat(h+1, :), 0); %ensure nonnegativity
+    nonLinear(h+1, :) = max(nonLinear(h+1, :), 0);%THIS IS WHAT I ADDED LAST NIGHT
 end
 
 % Extract states
