@@ -7,9 +7,9 @@ function [Kp, Ki, L] = findGains(A, B, C, desired_controller_poles, desired_obse
     BAugmented = [B; 1];
     
     % Augmented state matrix (new)
-    AAugmented = [A, zeros(nA,1); 
-                 -C, 0];
-    BAugmented = [B; 0];
+    % AAugmented = [A, zeros(nA,1); 
+    %              -C, 0];
+    % BAugmented = [B; 0];
 
     %verify controlability
     controlabilityMatrix = ctrb(AAugmented, BAugmented);
@@ -18,11 +18,11 @@ function [Kp, Ki, L] = findGains(A, B, C, desired_controller_poles, desired_obse
     end
     
     kAugmented = place(AAugmented, BAugmented, desired_controller_poles);
-        Kp = kAugmented(1:nA);
+    Kp = kAugmented(1:nA);
     Ki = kAugmented(end);
     
-%verify observability
-observMatrix = obsv(A,C);
+    %verify observability
+    observMatrix = obsv(A,C);
     if rank(observMatrix) > nA
         disp("System is observable")
     end

@@ -38,7 +38,7 @@ B = [0;
      1];
 C = [1, 0, 0];
 
-[K_p, K_i, L] = findGains(A, B, C, [-1, -1.1, -1.2, -1.3], [-2, -2.1, -2.2]);
+[K_p, K_i, L] = findGains(A, B, C, [-0.8, -0.64, -0.512, -0.4096], [-1, -1.1, -1.2]);
 
 
 %%
@@ -50,7 +50,7 @@ for j = 3 % Varies mode from auto to exercise. change to 2 later
     elseif j==3
         mode = 'Uncontrolled';
     end
-for i = 1 % Sweeps through D values, change to 4 later
+for i = 5 % Sweeps through D values, change to 4 later
 if i == 1
 D = DGenerate('Monophasic',t,20,0,70,20,50, 0);
 disturbance = 'Monophasic Eating';
@@ -94,14 +94,15 @@ Dinterp = @(t) interp1(0:dt:tLim, D, t, 'linear', 'extrap');
 
 dynamics = @(t, y, u) [
     -p1 * (y(1) - Gb) - y(2) * y(1) + Dinterp(t);
-     max(-p2 * y(2) + p3 * (y(3) - Ib));
+     -p2 * y(2) + p3 * (y(3) - Ib);
     -n * y(3) + u];
 
 % Pre-allocate storage for the states (G, X, I)
 nonLinear = zeros(length(t), 3); % 3 columns for G(t), X(t), and I(t)
 nonLinear(1, :) = IC;            % Set initial condition
 
-u =  0 ; %initial u
+u =  zeros(length(t), 1);
+u(1) = 0; %initial u
 
 vHat = IC;
 % Manual simulation loop
@@ -109,7 +110,7 @@ for h = 1:(length(t)-1)
     % Current state
     vCurrent = nonLinear(h, :); % Row vector [G, X, I] at time step h
     
-    vHatDot = A * vHat(h, :)' + B * u + L * (vCurrent(1) - vHat(h, 1));
+    vHatDot = A * vHat(h, :)' + B * u(h) + L * (vCurrent(1) - vHat(h, 1));
     vHat(h+1, :) = (vHat(h, :)' + vHatDot * dt)'; % Transpose back to row vector
     vHat(h+1, :) = max(vHat(h+1, :), 0); % ensure nonnegativity
 
@@ -117,13 +118,36 @@ for h = 1:(length(t)-1)
     z = (Gb * ones(h,1)) - nonLinear(1:h,1);
     z = sum(z);
 
-    u = -K_p * vHat(h, :)' + K_i * z;
+    %u(h+1) = K_p * vHat(h, :)' + K_i * z;
+
+    u(h+1) = -K_p * vHat(h, :)';
  
-    dvdt = dynamics(t(h), vCurrent', u); % Pass the current state as a column vector
+    dvdt = dynamics(t(h), vCurrent', u(h)); % Pass the current state as a column vector
     
     nonLinear(h+1, :) = vCurrent + dvdt' * dt; % Transpose dydt back to row vector
-    vHat(h+1, :) = max(vHat(h+1, :), 0); %ensure nonnegativity
-    nonLinear(h+1, :) = max(nonLinear(h+1, :), 0);%THIS IS WHAT I ADDED LAST NIGHT
+    
+    if vHat(h+1, 1) <= 0
+        vHat(h+1, 1) = 0;    
+    end
+    if vHat(h+1, 2) <= 0
+        vHat(h+1, 2) = 0;    
+    end
+    if vHat(h+1, 3) <= 0
+        vHat(h+1, 3) = 0;    
+    end
+
+    if all(nonLinear(h+1, 1) <= 0)
+        nonLinear(h+1, 1) = 0;    
+    end
+    if all(nonLinear(h+1, 2) <= 0)
+        nonLinear(h+1, 2) = 0;    
+    end
+    if all(nonLinear(h+1, 3) <= 0)
+        nonLinear(h+1, 3) = 0;    
+    end
+    
+    % vHat(h+1, :) = max(vHat(h+1, :), 0); %ensure nonnegativity
+    % nonLinear(h+1, :) = max(nonLinear(h+1, :), 0);%THIS IS WHAT I ADDED LAST NIGHT
 end
 
 % Extract states
