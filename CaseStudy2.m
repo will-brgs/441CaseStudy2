@@ -13,7 +13,7 @@ org = colors(2,:);
 purp = colors(4,:);
 grn = colors(5,:);
 
-%close all
+close all
 %%
 % Parameters
 p1 = 0.03;     % Rate of glucose decay
@@ -40,6 +40,25 @@ C = [1, 0, 0];
 
 [K_p, K_i, L] = findGains(A, B, C, [-0.8, -0.64, -0.512, -0.4096], [-1, -1.1, -1.2]);
 
+
+% Aa = [-p1, -Gb, 0, 0;
+%       0, -p2, p3, 0;
+%       0, 0, -n, 0;
+%       1, 0, 0, 0];
+% Ba = [0; 
+%       0; 
+%       1; 
+%       0];
+% Br = [0; 0 ; 0; -1];
+% Ca = [1, 0, 0, 0];
+% Da = [0];
+% 
+% p4 = -300;
+% Ka = place(Aa,Ba,[p1,p2,p3,p4]);
+% 
+% K_p = Ka(1:3);
+% k_i = Ka(4);
+% 
 
 %%
 for j = 3 % Varies mode from auto to exercise. change to 2 later
