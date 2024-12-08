@@ -116,7 +116,7 @@ sgtitle({'System State Responses', ...
 
 elseif graph == 1
 if i == 1
-figure
+fh1 = figure;
 subplot(2,2,i)
 plot(t, G,'color',blu,  'LineWidth', 1.5);
 title(sprintf('Monophasic Nutrition'));
@@ -170,8 +170,8 @@ end
 end
 
 %% Save images
-% filepath = "C:\Users\Will\OneDrive - Washington University in St. Louis\. Control Systems\Case Study 2\Figure Export";
-% exportgraphics(fh1, fullfile(filepath, 'part1 different vars.jpg'), 'resolution', 300);
+%filepath = "C:\Users\Will\OneDrive - Washington University in St. Louis\. Control Systems\Case Study 2\Figure Export";
+%exportgraphics(fh1, fullfile(filepath, 'Disturbance Glucose Response.jpg'), 'resolution', 300);
 % exportgraphics(fh2, fullfile(filepath, 'part1 equilibrium zoom in.jpg'), 'resolution', 300);
 % exportgraphics(fh3, fullfile(filepath, 'part1 linearized sim 1.jpg'), 'resolution', 300);
 % fh4 no longer exists
