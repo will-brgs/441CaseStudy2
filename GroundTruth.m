@@ -165,7 +165,7 @@ yline(100, '--','Color', red, 'LineWidth', 1.5);
 grid on
 
 end
-sgtitle({'Ground Truth Glucose Response for Disturbance Models'})
+sgtitle({'Glucose Response for Disturbance Models'})
 end
 end
 
