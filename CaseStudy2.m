@@ -39,31 +39,20 @@ B = [0;
      1];
 C = [1, 0, 0];
 
-% s=tf('s');
-% Plant=C*inv(s*eye(size(A))-A)*B;
-% new_C=tf([Kp Ki], [1,0]);
-% nyquist(Plant*new_C);
-
-% %[K_p, K_i, L] = findGains(A, B, C, [-5.3, -5.2, -5.1, -3], [-1, -1.1, -1.2]);
-[Kp, Ki, L] = findGains(A, B, C, [-0.4, -0.3, -0.2, -0.1], [-2, -2.2, -2.4]);
-% 
-% AAugmented = [A, zeros(3,1); 
-%               C, 0];
-% BAugmented = [B; 0];
-% 
-% kAugmented = place(A, B, [-5.3, -5.2, -5.1]);
-% Kp = kAugmented(1:3);
-% Ki = kAugmented(end);
-
-%% Define Mode
+%% Define Mode, find gains
 for j = 1 % Varies mode from auto to exercise. change to 2 later
-    if j == 1
-        mode = 'Auto';
-    elseif j==2
-        mode = 'Exercise';
-    elseif j==3
-        mode = 'Uncontrolled';
-    end
+if j == 1
+mode = 'Auto';
+controllerPoles = [-0.4, -0.3, -0.2, -0.1];
+observerPoles = [-2, -2.2, -2.4];
+elseif j==2
+mode = 'Exercise';
+controllerPoles = [-0.4, -0.3, -0.2, -0.1];
+observerPoles = [-2, -2.2, -2.4];
+end
+
+[Kp, Ki, L] = findGains(A, B, C, controllerPoles, observerPoles);
+
 for i = 1 % Sweeps through D values, change to 4 later
 %% Define Disturbance
 if i == 1
