@@ -92,7 +92,7 @@ end
 Dinterp = @(t) interp1(0:dt:tLim, D, t, 'linear', 'extrap');
 
 %options = odeset('NonNegative', 1:6);
-init = [120; 0; 11;120;0;11;0]; % Initial conditions: [G, X, I]
+init = [100; 0; 11;100;0;11;0]; % Initial conditions: [G, X, I]
 [t,states] = ode45(@(t,states) simFunc(t, A, B, Dinterp, Kp, Ki, L, Gb, states), t, init);
 
 % Extract states
