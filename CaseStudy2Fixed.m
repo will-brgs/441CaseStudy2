@@ -218,8 +218,9 @@ end
 
 
 %%
+options = odeset('NonNegative', 1:6);
 init = [120; 0; 11;120;0;11;0]; % Initial conditions: [G, X, I]
-[t,states] = ode45(@(t,states) simFunc(t, A, B, Dinterp, K_p, K_i, L, Gb, states), t, init);
+[t,states] = ode45(@(t,states) simFunc(t, A, B, Dinterp, K_p, K_i, L, Gb, states), t, init, options);
 
 
 figure;

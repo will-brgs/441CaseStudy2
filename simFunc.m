@@ -12,6 +12,10 @@ function states_dot = simFunc(t, A, B, Dinterp, K_p, K_i, L, r, states)
     z = states(7);
     z_dot = r - v_real(1);
 
+    % v_hat = max(v_hat, 0);
+    % v_real = max(v_real, 0);
+
+
     dynamics = @(t, y, u) [
     -p1 * (y(1) - Gb) - y(2) * y(1) + Dinterp(t);
      -p2 * y(2) + p3 * (y(3) - Ib);
@@ -19,6 +23,8 @@ function states_dot = simFunc(t, A, B, Dinterp, K_p, K_i, L, r, states)
 
 
     u = -K_p * v_hat - K_i*z;
+
+    %u = max(u, 0);
     
     v_hat_dot = A*v_hat + B*u + L*(v_real(1) - v_hat(1));
 
@@ -27,28 +33,29 @@ function states_dot = simFunc(t, A, B, Dinterp, K_p, K_i, L, r, states)
     % end
  
     v_dot = dynamics(t, v_real(1:3), u); % Pass the current state as a column vector
+
     
     states_dot = [v_dot; 
                   v_hat_dot; 
                   z_dot];
     
-    if v_hat(h+1, 1) <= 0
-        v_hat(h+1, 1) = 0;    
-    end
-    if v_hat(h+1, 2) <= 0
-        v_hat(h+1, 2) = 0;    
-    end
-    if v_hat(h+1, 3) <= 0
-        v_hat(h+1, 3) = 0;    
-    end
-    
-    if all(v_real(h+1, 1) <= 0)
-        v_real(h+1, 1) = 0;    
-    end
-    if all(v_real(h+1, 2) <= 0)
-        v_real(h+1, 2) = 0;    
-    end
-    if all(v_real(h+1, 3) <= 0)
-        v_real(h+1, 3) = 0;    
-    end
+    % if v_hat(1) <= 0
+    %     v_hat(h+1, 1) = 0;    
+    % end
+    % if v_hat(2) <= 0
+    %     v_hat(h+1, 2) = 0;    
+    % end
+    % if v_hat(3) <= 0
+    %     v_hat(h+1, 3) = 0;    
+    % end
+    % 
+    % if all(v_real(1) <= 0)
+    %     v_real(h+1, 1) = 0;    
+    % end
+    % if all(v_real(2) <= 0)
+    %     v_real(h+1, 2) = 0;    
+    % end
+    % if all(v_real(3) <= 0)
+    %     v_real = 0;    
+    % end
 end
