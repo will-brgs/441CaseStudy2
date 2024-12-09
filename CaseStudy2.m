@@ -215,6 +215,12 @@ sgtitle({'System State Responses', ...
     'FontSize', 12, 'FontWeight', 'bold')
 end
 end
+
+
+%%
+init = [120; 0; 11;120;0;11;0]; % Initial conditions: [G, X, I]
+[t,states] = ode45(@(t,states) simFunc(t, A, B, Dinterp, K_p, K_i, L, states), t, init);
+plot_results(t,states)
 %% Save images
 % filepath = "C:\Users\Will\OneDrive - Washington University in St. Louis\. Control Systems\Case Study 2\Figure Export";
 % exportgraphics(fh1, fullfile(filepath, 'part1 different vars.jpg'), 'resolution', 300);
