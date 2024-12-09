@@ -38,7 +38,7 @@ B = [0;
      1];
 C = [1, 0, 0];
 
-[K_p, K_i, L] = findGains(A, B, C, [-0.8, -0.64, -0.512, -0.4096], [-1, -1.1, -1.2]);
+[K_p, K_i, L] = findGains(A, B, C, [-5.3, -5.2, -5.1, -3], [-1, -1.1, -1.2]);
 
 
 % Aa = [-p1, -Gb, 0, 0;
@@ -59,6 +59,15 @@ C = [1, 0, 0];
 % K_p = Ka(1:3);
 % k_i = Ka(4);
 % 
+
+AAugmented = [A, zeros(3,1); 
+                  C, 0];
+BAugmented = [B; 0];
+
+kAugmented = place(A, B, [-5.3, -5.2, -5.1]);
+K_p = kAugmented(1:3);
+K_i = kAugmented(end);
+
 
 %%
 for j = 3 % Varies mode from auto to exercise. change to 2 later
@@ -139,10 +148,10 @@ for h = 1:(length(t)-1)
 
     %u(h+1) = K_p * vHat(h, :)' + K_i * z;
 
-    u(h+1) = -K_p * vHat(h, :)' - K_i*z;
-    if u(h+1, 1) <= 0
-        u(h+1, 1) = 0;    
-    end
+    u(h+1) = -K_p * vHat(h, :)';
+    % if u(h+1, 1) <= 0
+    %     u(h+1, 1) = 0;    
+    % end
  
     dvdt = dynamics(t(h), vCurrent', u(h)); % Pass the current state as a column vector
     
