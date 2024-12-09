@@ -30,6 +30,7 @@ t = 0:dt:tLim;
 IC = [Gb, 0, Ib]; %should baseline insulin action be zero???
 
 %% Deterine Observer/Controller
+%syms kp ki
 A = [-p1, -Gb, 0;
      0, -p2, p3;
      0, 0, -n];
@@ -38,16 +39,21 @@ B = [0;
      1];
 C = [1, 0, 0];
 
-%[K_p, K_i, L] = findGains(A, B, C, [-5.3, -5.2, -5.1, -3], [-1, -1.1, -1.2]);
-[Kp, Ki, L] = findGains(A, B, C, [-5.0, -5.1, -5.2, -5.3], [-6, -6.2, -6.4]);
+% s=tf('s');
+% Plant=C*inv(s*eye(size(A))-A)*B;
+% new_C=tf([Kp Ki], [1,0]);
+% nyquist(Plant*new_C);
 
-AAugmented = [A, zeros(3,1); 
-              C, 0];
-BAugmented = [B; 0];
-
-kAugmented = place(A, B, [-5.3, -5.2, -5.1]);
-Kp = kAugmented(1:3);
-Ki = kAugmented(end);
+% %[K_p, K_i, L] = findGains(A, B, C, [-5.3, -5.2, -5.1, -3], [-1, -1.1, -1.2]);
+[Kp, Ki, L] = findGains(A, B, C, [-5.4, -5.3, -5.2, -1.1], [-2, -2.2, -2.4]);
+% 
+% AAugmented = [A, zeros(3,1); 
+%               C, 0];
+% BAugmented = [B; 0];
+% 
+% kAugmented = place(A, B, [-5.3, -5.2, -5.1]);
+% Kp = kAugmented(1:3);
+% Ki = kAugmented(end);
 
 %% Define Mode
 for j = 1 % Varies mode from auto to exercise. change to 2 later

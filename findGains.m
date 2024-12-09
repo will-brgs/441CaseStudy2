@@ -8,7 +8,7 @@ function [Kp, Ki, L] = findGains(A, B, C, desired_controller_poles, desired_obse
     
     % Augmented state matrix (new)
     AAugmented = [A, zeros(3,1); 
-                 C, 0];
+                 -C, 0];
     BAugmented = [B; 0];
 
     %verify controlability
