@@ -38,20 +38,20 @@ B = [0;
 C = [1, 0, 0];
 
 %% Define Mode, find gains
-for j = 1 % Varies mode from auto to exercise. change to 2 later
+for j = 2 % Varies mode from auto to exercise. change to 2 later
 if j == 1
 mode = 'Auto';
 controllerPoles = [-0.4, -0.3, -0.2, -0.1];
 observerPoles = [-2, -2.2, -2.4];
 elseif j==2
 mode = 'Exercise';
-controllerPoles = [-0.4, -0.3, -0.2, -0.1];
-observerPoles = [-2, -2.2, -2.4];
+controllerPoles = 0.75 .* [-0.4, -0.3, -0.2, -0.1];
+observerPoles = 0.75 .*[-2, -2.2, -2.4];
 end
 
 [Kp, Ki, L] = findGains(A, B, C, controllerPoles, observerPoles);
 
-for i = 1 % Sweeps through D values, change to 4 later
+for i = 3 % Sweeps through D values, change to 4 later
 %% Define Disturbance
 if i == 1
 D = DGenerate('Monophasic',t,20,0,70,20,50, 0);
