@@ -219,8 +219,35 @@ end
 
 %%
 init = [120; 0; 11;120;0;11;0]; % Initial conditions: [G, X, I]
-[t,states] = ode45(@(t,states) simFunc(t, A, B, Dinterp, K_p, K_i, L, states), t, init);
-plot_results(t,states)
+[t,states] = ode45(@(t,states) simFunc(t, A, B, Dinterp, K_p, K_i, L, Gb, states), t, init);
+
+
+figure;
+subplot(3, 1, 1);
+plot(t, states(:, 1),'color',blu,  'LineWidth', 1.5);
+xlabel('Time (min)');
+ylabel('G(t) (mg/dL)');
+title('Blood Glucose Concentration');
+grid on;
+
+subplot(3, 1, 2);
+plot(t, states(:, 2),'color',purp , 'LineWidth', 1.5);
+xlabel('Time (min)');
+ylabel('X(t)');
+title('Insulin Action Dynamics');
+grid on;
+
+subplot(3, 1, 3);
+plot(t, states(:, 3), 'g','color',grn,  'LineWidth', 1.5);
+xlabel('Time (min)');
+ylabel('I(t) (mU/L)');
+title('Plasma Insulin Concentration');
+grid on;
+
+sgtitle({'System State Responses', ...
+    sprintf('Disturbance Type: %s', disturbance), ...
+    sprintf('Control Mode: %s', mode)},...
+    'FontSize', 12, 'FontWeight', 'bold')
 %% Save images
 % filepath = "C:\Users\Will\OneDrive - Washington University in St. Louis\. Control Systems\Case Study 2\Figure Export";
 % exportgraphics(fh1, fullfile(filepath, 'part1 different vars.jpg'), 'resolution', 300);
