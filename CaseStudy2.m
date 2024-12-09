@@ -38,7 +38,7 @@ B = [0;
 C = [1, 0, 0];
 
 %% Define Mode, find gains
-for j = 2 % Varies mode from auto to exercise. change to 2 later
+for j = 1:2 % Varies mode from auto to exercise. change to 2 later
 if j == 1
 mode = 'Auto';
 controllerPoles = [-0.4, -0.3, -0.2, -0.1];
@@ -51,7 +51,7 @@ end
 
 [Kp, Ki, L] = findGains(A, B, C, controllerPoles, observerPoles);
 
-for i = 3 % Sweeps through D values, change to 4 later
+for i = 1:4 % Sweeps through D values, change to 4 later
 %% Define Disturbance
 if i == 1
 D = DGenerate('Monophasic',t,20,0,70,20,50, 0);
@@ -98,7 +98,6 @@ G = states(:, 1);
 X = states(:, 2);
 I = states(:, 3);
 
-figure;
 subplot(3, 1, 1);
 plot(t, G,'color',blu,  'LineWidth', 1.5);
 xlabel('Time (min)');
@@ -127,13 +126,13 @@ sgtitle({'System State Responses', ...
 end
 end
 %% Save images
+% figHandles = findall(0, 'Type', 'figure');
 % filepath = "C:\Users\Will\OneDrive - Washington University in St. Louis\. Control Systems\Case Study 2\Figure Export";
-% exportgraphics(fh1, fullfile(filepath, 'part1 different vars.jpg'), 'resolution', 300);
-% exportgraphics(fh2, fullfile(filepath, 'part1 equilibrium zoom in.jpg'), 'resolution', 300);
-% exportgraphics(fh3, fullfile(filepath, 'part1 linearized sim 1.jpg'), 'resolution', 300);
-% fh4 no longer exists
-% exportgraphics(fh5, fullfile(filepath, 'part2 delayed sine input u.jpg'), 'resolution', 300);
-% exportgraphics(fh6, fullfile(filepath, 'part2 delayed sine sim.jpg'), 'resolution', 300);
-% exportgraphics(fh7, fullfile(filepath, 'part2 zombies sim.jpg'), 'resolution', 300);
-% exportgraphics(fh8, fullfile(filepath, 'part3 networked sim no control.jpg'), 'resolution', 300);
-% exportgraphics(fh9, fullfile(filepath, 'part3 networked sim control.jpg'), 'resolution', 300);
+% for n = 1:length(figHandles)
+%     fh = figHandles(n);
+%     figure(fh);
+%     filename = fullfile(filepath, sprintf('figure_%d.jpg', n));
+%     exportgraphics(fh, filename, 'Resolution', 300);
+%     disp('fig saved')
+% end
+
