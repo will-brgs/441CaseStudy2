@@ -32,23 +32,23 @@ function states_dot = simFunc(t, A, B, Dinterp, K_p, K_i, L, r, states)
                   v_hat_dot; 
                   z_dot];
     
-    % if vHat(h+1, 1) <= 0
-    %     vHat(h+1, 1) = 0;    
-    % end
-    % if vHat(h+1, 2) <= 0
-    %     vHat(h+1, 2) = 0;    
-    % end
-    % if vHat(h+1, 3) <= 0
-    %     vHat(h+1, 3) = 0;    
-    % end
-    % 
-    % if all(nonLinear(h+1, 1) <= 0)
-    %     nonLinear(h+1, 1) = 0;    
-    % end
-    % if all(nonLinear(h+1, 2) <= 0)
-    %     nonLinear(h+1, 2) = 0;    
-    % end
-    % if all(nonLinear(h+1, 3) <= 0)
-    %     nonLinear(h+1, 3) = 0;    
-    % end
+    if v_hat(h+1, 1) <= 0
+        v_hat(h+1, 1) = 0;    
+    end
+    if v_hat(h+1, 2) <= 0
+        v_hat(h+1, 2) = 0;    
+    end
+    if v_hat(h+1, 3) <= 0
+        v_hat(h+1, 3) = 0;    
+    end
+    
+    if all(v_real(h+1, 1) <= 0)
+        v_real(h+1, 1) = 0;    
+    end
+    if all(v_real(h+1, 2) <= 0)
+        v_real(h+1, 2) = 0;    
+    end
+    if all(v_real(h+1, 3) <= 0)
+        v_real(h+1, 3) = 0;    
+    end
 end
