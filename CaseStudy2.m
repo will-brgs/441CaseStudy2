@@ -45,7 +45,7 @@ C = [1, 0, 0];
 % nyquist(Plant*new_C);
 
 % %[K_p, K_i, L] = findGains(A, B, C, [-5.3, -5.2, -5.1, -3], [-1, -1.1, -1.2]);
-[Kp, Ki, L] = findGains(A, B, C, [-5.4, -5.3, -5.2, -1.1], [-2, -2.2, -2.4]);
+[Kp, Ki, L] = findGains(A, B, C, [-0.4, -0.3, -0.2, -0.1], [-2, -2.2, -2.4]);
 % 
 % AAugmented = [A, zeros(3,1); 
 %               C, 0];
