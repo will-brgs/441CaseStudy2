@@ -27,8 +27,6 @@ dt = 0.05;
 tLim = 240;
 t = 0:dt:tLim;
 
-IC = [Gb, 0, Ib]; %should baseline insulin action be zero???
-
 %% Deterine Observer/Controller
 %syms kp ki
 A = [-p1, -Gb, 0;
@@ -92,8 +90,8 @@ end
 Dinterp = @(t) interp1(0:dt:tLim, D, t, 'linear', 'extrap');
 
 %options = odeset('NonNegative', 1:6);
-init = [100; 0; 11;100;0;11;0]; % Initial conditions: [G, X, I]
-[t,states] = ode45(@(t,states) simFunc(t, A, B, Dinterp, Kp, Ki, L, Gb, states), t, init);
+IC = [100; 0; 11;100;0;10;0]; % Initial conditions: [G, X, I]
+[t,states] = ode45(@(t,states) simFunc(t, A, B, Dinterp, Kp, Ki, L, Gb, states), t, IC);
 
 % Extract states
 G = states(:, 1);
