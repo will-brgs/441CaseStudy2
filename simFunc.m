@@ -24,7 +24,7 @@ function states_dot = simFunc(t, A, B, Dinterp, K_p, K_i, L, r, states)
 
     u = -K_p * v_hat - K_i*z;
 
-    %u = max(u, 0);
+    % u = max(u, 0);
     
     v_hat_dot = A*v_hat + B*u + L*(v_real(1) - v_hat(1));
 

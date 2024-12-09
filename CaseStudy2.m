@@ -64,7 +64,7 @@ for j = 1 % Varies mode from auto to exercise. change to 2 later
     elseif j==3
         mode = 'Uncontrolled';
     end
-for i = 2 % Sweeps through D values, change to 4 later
+for i = 1 % Sweeps through D values, change to 4 later
 %% Define Disturbance
 if i == 1
 D = DGenerate('Monophasic',t,20,0,70,20,50, 0);
@@ -102,9 +102,9 @@ end
 %% Solve ODE with Control
 Dinterp = @(t) interp1(0:dt:tLim, D, t, 'linear', 'extrap');
 
-options = odeset('NonNegative', 1:6);
+%options = odeset('NonNegative', 1:6);
 init = [120; 0; 11;120;0;11;0]; % Initial conditions: [G, X, I]
-[t,states] = ode45(@(t,states) simFunc(t, A, B, Dinterp, Kp, Ki, L, Gb, states), t, init, options);
+[t,states] = ode45(@(t,states) simFunc(t, A, B, Dinterp, Kp, Ki, L, Gb, states), t, init);
 
 % Extract states
 G = states(:, 1);
