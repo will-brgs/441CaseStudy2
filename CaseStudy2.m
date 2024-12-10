@@ -98,6 +98,7 @@ G = states(:, 1);
 X = states(:, 2);
 I = states(:, 3);
 
+figure
 subplot(3, 1, 1);
 plot(t, G,'color',blu,  'LineWidth', 1.5);
 xlabel('Time (min)');
